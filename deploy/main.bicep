@@ -153,6 +153,9 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   location: location
   kind: 'StorageV2'
   sku: environmentConfigurationMap[environmentType].storageAccount.sku
+  properties: {
+    allowBlobPublicAccess: true // Enable public access at the storage account level
+  }  
 
   resource blobService 'blobServices' = {
     name: 'default'
