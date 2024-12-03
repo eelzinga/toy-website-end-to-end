@@ -148,25 +148,48 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
+// resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+//   name: storageAccountName
+//   location: location
+//   kind: 'StorageV2'
+//   sku: environmentConfigurationMap[environmentType].storageAccount.sku
+//   properties: {
+//     allowBlobPublicAccess: true // Enable public access at the storage account level
+//   }  
+
+//   resource blobService 'blobServices' = {
+//     name: 'default'
+
+//     resource storageAccountImagesBlobContainer 'containers' = {
+//       name: storageAccountImagesBlobContainerName
+
+//       properties: {
+//         publicAccess: 'Blob'
+//       }
+//     }
+//   }
+// }
+
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: storageAccountName
   location: location
   kind: 'StorageV2'
   sku: environmentConfigurationMap[environmentType].storageAccount.sku
   properties: {
-    allowBlobPublicAccess: true // Enable public access at the storage account level
-  }  
+    allowBlobPublicAccess: true
+  }
+}
 
-  resource blobService 'blobServices' = {
-    name: 'default'
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2021-09-01' = {
+  parent: storageAccount
+  name: 'default'
+}
 
-    resource storageAccountImagesBlobContainer 'containers' = {
-      name: storageAccountImagesBlobContainerName
-
-      properties: {
-        publicAccess: 'Blob'
-      }
-    }
+resource storageAccountImagesBlobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-09-01' = {
+  parent: blobService
+  name: storageAccountImagesBlobContainerName
+  properties: {
+    publicAccess: 'Blob'
   }
 }
 
